@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>איתגור מול מתן תמיכה</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 24px 16px; direction: rtl; }
+  h1 { font-size: 1.6rem; color: #1e3a5f; margin-bottom: 6px; text-align: center; }
+  .subtitle { font-size: 0.95rem; color: #5a7a9a; margin-bottom: 20px; text-align: center; }
+  .main-layout { display: flex; gap: 20px; width: 100%; max-width: 1100px; align-items: flex-start; }
+  .bench { display: flex; flex-direction: column; gap: 12px; background: white; border-radius: 12px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); min-width: 160px; }
+  .bench h3 { font-size: 0.9rem; color: #1e3a5f; margin-bottom: 4px; text-align: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; }
+  .bench-item { display: flex; flex-direction: column; align-items: center; gap: 4px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px; font-size: 0.78rem; color: #374151; line-height: 1.4; }
+  .bench-item .case-name { font-weight: 700; color: #1e3a5f; font-size: 0.82rem; }
+  .bench-item .case-desc { font-size: 0.75rem; color: #6b7280; text-align: center; }
+  .graph-wrapper { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .graph-container { position: relative; width: 480px; height: 480px; flex-shrink: 0; }
+  .graph-bg { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; border: 2px solid #2c5282; border-radius: 4px; overflow: hidden; }
+  .quadrant { display: flex; align-items: center; justify-content: center; font-size: 0.82rem; font-weight: 700; text-align: center; padding: 10px; line-height: 1.4; pointer-events: none; }
+  .q-tl { background: #fef3c7; color: #92400e; }
+  .q-tr { background: #d1fae5; color: #065f46; }
+  .q-bl { background: #fee2e2; color: #991b1b; }
+  .q-br { background: #dbeafe; color: #1e40af; }
+  .axis-x { position: absolute; bottom: 50%; left: 0; right: 0; height: 2px; background: #2c5282; pointer-events: none; }
+  .axis-y { position: absolute; right: 50%; top: 0; bottom: 0; width: 2px; background: #2c5282; pointer-events: none; }
+  .label-top { position: absolute; top: 6px; right: 50%; transform: translateX(50%); font-size: 0.75rem; font-weight: 700; color: #1e3a5f; background: rgba(240,244,248,0.9); padding: 2px 6px; border-radius: 4px; white-space: nowrap; pointer-events: none; }
+  .label-bottom { position: absolute; bottom: 6px; right: 50%; transform: translateX(50%); font-size: 0.75rem; font-weight: 700; color: #1e3a5f; background: rgba(240,244,248,0.9); padding: 2px 6px; border-radius: 4px; white-space: nowrap; pointer-events: none; }
+  .label-right { position: absolute; top: 50%; right: 6px; transform: translateY(-50%); font-size: 0.75rem; font-weight: 700; color: #1e3a5f; background: rgba(240,244,248,0.9); padding: 2px 6px; border-radius: 4px; white-space: nowrap; pointer-events: none; }
+  .label-left { position: absolute; top: 50%; left: 6px; transform: translateY(-50%); font-size: 0.75rem; font-weight: 700; color: #1e3a5f; background: rgba(240,244,248,0.9); padding: 2px 6px; border-radius: 4px; white-space: nowrap; pointer-events: none; }
+  .student { position: absolute; width: 54px; height: 54px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: grab; user-select: none; font-size: 1.4rem; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.25); transition: box-shadow 0.15s, transform 0.15s; z-index: 10; }
+  .student:hover { box-shadow: 0 6px 18px rgba(0,0,0,0.3); transform: scale(1.08); }
+  .student.dragging { cursor: grabbing; box-shadow: 0 8px 24px rgba(0,0,0,0.35); transform: scale(1.12); z-index: 20; }
+  .student.placed { outline: 3px solid #fbbf24; }
+  .student-label { font-size: 0.52rem; font-weight: 700; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.5); margin-top: 1px; }
+  .side-panel { flex: 1; display: flex; flex-direction: column; gap: 14px; }
+  .result-box { background: white; border-radius: 10px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); min-height: 140px; }
+  .result-box h3 { font-size: 1rem; color: #1e3a5f; margin-bottom: 10px; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; }
+  .result-content { font-size: 0.85rem; color: #4a5568; line-height: 1.6; }
+  .result-empty { color: #9ca3af; font-style: italic; font-size: 0.85rem; }
+  .zone-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; margin-bottom: 6px; }
+  .reset-btn { background: #1e3a5f; color: white; border: none; border-radius: 8px; padding: 10px 20px; font-size: 0.9rem; cursor: pointer; font-family: inherit; transition: background 0.15s; width: 100%; }
+  .reset-btn:hover { background: #2c5282; }
+  .instructions { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 10px 14px; font-size: 0.8rem; color: #1e40af; line-height: 1.5; }
+  .progress { font-size: 0.82rem; color: #6b7280; text-align: center; }
+</style>
+</head>
+<body>
+<h1>איתגור מול מתן תמיכה</h1>
+<p class="subtitle">קראו כל תיאור מקרה — גררו את הסטודנט למיקום המתאים על הגרף</p>
+<div class="main-layout">
+  <div class="bench" id="bench">
+    <h3>🎓 סטודנטים</h3>
+    <div class="bench-item" id="bench-s1"><div class="case-name">👩‍⚕️ נועה</div><div class="case-desc">שבוע שלישי — משימות מורכבות ללא שיחות הדרכה. מרגישה אובדת וחוששת לשאול.</div></div>
+    <div class="bench-item" id="bench-s2"><div class="case-name">👨‍⚕️ דן</div><div class="case-desc">שבוע שישי — המדריכה עושה הכל בעצמה ומשבחת על כל פרט. דן לא מתפתח.</div></div>
+    <div class="bench-item" id="bench-s3"><div class="case-name">👩‍💼 מיה</div><div class="case-desc">שבוע שני — אין הנחיה, אין משימות. מיה ברקע ומפסיקה ליזום.</div></div>
+    <div class="bench-item" id="bench-s4"><div class="case-name">👨‍💼 יונתן</div><div class="case-desc">שבוע חמישי — מקרים מורכבים, מרחב לטעות, ושתי פגישות הדרכה תומכות בשבוע.</div></div>
+  </div>
+  <div class="graph-wrapper">
+    <div class="graph-container" id="graph">
+      <div class="graph-bg">
+        <div class="quadrant q-tl">לחץ ושחיקה<br><small>Stress / Burnout</small></div>
+        <div class="quadrant q-tr">צמיחה וביצועים גבוהים<br><small>High Performance ⭐</small></div>
+        <div class="quadrant q-bl">אדישות<br><small>Apathy</small></div>
+        <div class="quadrant q-br">נוחות / קיפאון<br><small>Comfort</small></div>
+      </div>
+      <div class="axis-x"></div>
+      <div class="axis-y"></div>
+      <div class="label-top">אתגר גבוה</div>
+      <div class="label-bottom">אתגר נמוך</div>
+      <div class="label-right">תמיכה נמוכה</div>
+      <div class="label-left">תמיכה גבוהה</div>
+    </div>
+    <p class="progress" id="progress">0 מתוך 4 סטודנטים מוצבים</p>
+  </div>
+  <div class="side-panel">
+    <div class="instructions">💡 <strong>הוראות:</strong> קראו את תיאור המקרה ליד כל סטודנט, ואז גררו אותו לאזור המתאים על הגרף. לאחר הנחה תופיע פרשנות.</div>
+    <div class="result-box" id="resultBox"><h3>📍 פרשנות המיקום</h3><div class="result-content" id="resultContent"><span class="result-empty">גררו סטודנט לגרף כדי לראות פרשנות</span></div></div>
+    <button class="reset-btn" onclick="resetAll()">🔄 איפוס — החזר את כולם לנקודת התחלה</button>
+  </div>
+</div>
+<script>
+const students = [
+  { id: 's1', emoji: '👩‍⚕️', name: 'נועה', color: '#7c3aed' },
+  { id: 's2', emoji: '👨‍⚕️', name: 'דן', color: '#0891b2' },
+  { id: 's3', emoji: '👩‍💼', name: 'מיה', color: '#be185d' },
+  { id: 's4', emoji: '👨‍💼', name: 'יונתן', color: '#b45309' },
+];
+const interpretations = {
+  'לחץ ושחיקה': { color: '#92400e', bg: '#fef3c7', text: 'אתגר גבוה + תמיכה נמוכה = לחץ ושחיקה. הסטודנט מתמודד עם דרישות גבוהות ללא רשת ביטחון. תפקיד המדריכה: להוריד את רמת האתגר או להגביר את התמיכה — שיחות הדרכה תכופות ומתן כלים ספציפיים.' },
+  'צמיחה וביצועים גבוהים': { color: '#065f46', bg: '#d1fae5', text: 'אתגר גבוה + תמיכה גבוהה = אזור הצמיחה האופטימלי. הסטודנט מתמתח מעבר לנוחות שלו, אך מרגיש מוחזק. זהו המצב שמדריכים טובים מכוונים אליו.' },
+  'אדישות': { color: '#991b1b', bg: '#fee2e2', text: 'אתגר נמוך + תמיכה נמוכה = אדישות. הסטודנט לא מקבל לא גירוי ולא חיבור ומתנתק. תפקיד המדריכה: ליצור קשר אישי ולהכניס משמעות ואתגר.' },
+  'נוחות וקיפאון': { color: '#1e40af', bg: '#dbeafe', text: 'אתגר נמוך + תמיכה גבוהה = נוחות וקיפאון. הסטודנט נעים לו אבל לא מתפתח. יש סכנה של תלות במדריכה. תפקיד המדריכה: לשמר את הקשר ולהתחיל להכניס אתגרים מדודים.' }
+};
+let placedCount = 0;
+const tokenEls = {};
+function getZone(leftPct, topPct) { const isHighSupport = leftPct < 50; const isHighChallenge = topPct < 50; if (isHighChallenge && !isHighSupport) return 'לחץ ושחיקה'; if (isHighChallenge && isHighSupport) return 'צמיחה וביצועים גבוהים'; if (!isHighChallenge && !isHighSupport) return 'אדישות'; return 'נוחות וקיפאון'; }
+function showResult(name, zone) { const info = interpretations[zone]; document.getElementById('resultContent').innerHTML = `<span class="zone-badge" style="background:${info.bg}; color:${info.color};">${zone}</span><strong style="color:#1e3a5f; display:block; margin-bottom:4px;">${name}</strong><span>${info.text}</span>`; }
+function updateProgress() { document.getElementById('progress').textContent = `${placedCount} מתוך 4 סטודנטים מוצבים`; }
+function createToken(s) { const el = document.createElement('div'); el.className = 'student'; el.id = 'token-' + s.id; el.dataset.name = s.name; el.dataset.placed = 'false'; el.style.background = s.color; el.innerHTML = `<span>${s.emoji}</span><span class="student-label">${s.name}</span>`; el.style.position = 'fixed'; el.style.left = '-9999px'; el.style.top = '-9999px'; document.body.appendChild(el); tokenEls[s.id] = el; initDrag(el, s); positionOnBench(s.id); }
+function positionOnBench(sid) { const benchEl = document.getElementById('bench-' + sid); const tokenEl = tokenEls[sid]; const rect = benchEl.getBoundingClientRect(); tokenEl.style.left = (rect.left + rect.width / 2 - 27) + 'px'; tokenEl.style.top = (rect.top + rect.height / 2 - 27) + 'px'; }
+function initDrag(el, s) { let startClientX, startClientY, startLeft, startTop, isDragging = false; el.addEventListener('mousedown', onDown); el.addEventListener('touchstart', onDown, { passive: false }); function onDown(e) { e.preventDefault(); isDragging = true; el.classList.add('dragging'); const point = e.touches ? e.touches[0] : e; startClientX = point.clientX; startClientY = point.clientY; startLeft = parseFloat(el.style.left); startTop = parseFloat(el.style.top); document.addEventListener('mousemove', onMove); document.addEventListener('touchmove', onMove, { passive: false }); document.addEventListener('mouseup', onUp); document.addEventListener('touchend', onUp); } function onMove(e) { if (!isDragging) return; e.preventDefault(); const point = e.touches ? e.touches[0] : e; el.style.left = (startLeft + point.clientX - startClientX) + 'px'; el.style.top = (startTop + point.clientY - startClientY) + 'px'; } function onUp(e) { if (!isDragging) return; isDragging = false; el.classList.remove('dragging'); document.removeEventListener('mousemove', onMove); document.removeEventListener('touchmove', onMove); document.removeEventListener('mouseup', onUp); document.removeEventListener('touchend', onUp); const graphEl = document.getElementById('graph'); const graphRect = graphEl.getBoundingClientRect(); const elRect = el.getBoundingClientRect(); const elCX = elRect.left + elRect.width / 2; const elCY = elRect.top + elRect.height / 2; if (elCX >= graphRect.left && elCX <= graphRect.right && elCY >= graphRect.top && elCY <= graphRect.bottom) { const leftPct = ((elCX - graphRect.left) / graphRect.width) * 100; const topPct = ((elCY - graphRect.top) / graphRect.height) * 100; const clampedLeft = Math.max(graphRect.left, Math.min(graphRect.right - elRect.width, elRect.left)); const clampedTop = Math.max(graphRect.top, Math.min(graphRect.bottom - elRect.height, elRect.top)); el.style.left = clampedLeft + 'px'; el.style.top = clampedTop + 'px'; el.classList.add('placed'); if (el.dataset.placed === 'false') { placedCount++; el.dataset.placed = 'true'; updateProgress(); } const zone = getZone(leftPct, topPct); showResult(s.name, zone); } else { if (el.dataset.placed === 'true') { placedCount--; el.dataset.placed = 'false'; el.classList.remove('placed'); updateProgress(); } positionOnBench(s.id); } } }
+function resetAll() { students.forEach(s => { const el = tokenEls[s.id]; el.dataset.placed = 'false'; el.classList.remove('placed'); positionOnBench(s.id); }); placedCount = 0; updateProgress(); document.getElementById('resultContent').innerHTML = '<span class="result-empty">גררו סטודנט לגרף כדי לראות פרשנות</span>'; }
+students.forEach(createToken);
+updateProgress();
+window.addEventListener('resize', () => { students.forEach(s => { if (tokenEls[s.id].dataset.placed === 'false') positionOnBench(s.id); }); });
+</script>
+</body>
+</html>

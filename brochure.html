@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>הדרכה קלינית — סיכום יום הלמידה</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;800&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy:    #1a2e4a;
+    --teal:    #2a7f8f;
+    --sage:    #6aab8e;
+    --sand:    #f5f0e8;
+    --white:   #ffffff;
+    --text:    #2d3748;
+    --muted:   #718096;
+    --accent:  #e07b4a;
+  }
+
+  body {
+    font-family: 'Heebo', Arial, sans-serif;
+    background: var(--sand);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px 16px 48px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .page {
+    width: 100%;
+    max-width: 760px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--navy);
+    color: white;
+    border-radius: 16px 16px 0 0;
+    padding: 28px 32px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -40px; left: -40px;
+    width: 180px; height: 180px;
+    background: var(--teal);
+    border-radius: 50%;
+    opacity: 0.18;
+  }
+
+  .header-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: var(--sage);
+    text-transform: uppercase;
+  }
+
+  .header h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    line-height: 1.25;
+    color: white;
+  }
+
+  .header-sub {
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.6);
+    margin-top: 2px;
+  }
+
+  /* ── BODY ── */
+  .body {
+    background: white;
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* ── SECTION ── */
+  .section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 2px solid var(--sand);
+    padding-bottom: 8px;
+  }
+
+  .section-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .section h2 {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--navy);
+    letter-spacing: 0.3px;
+  }
+
+  .section p {
+    font-size: 0.85rem;
+    line-height: 1.75;
+    color: var(--text);
+  }
+
+  .section strong {
+    color: var(--navy);
+    font-weight: 700;
+  }
+
+  /* ── FOUR-BOX GRID ── */
+  .grid-2x2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .mini-card {
+    background: var(--sand);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--text);
+    border-right: 3px solid transparent;
+  }
+
+  .mini-card .card-title {
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: var(--navy);
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* ── IRM STYLES ROW ── */
+  .irm-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+
+  .irm-tag {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 11px;
+    border-radius: 20px;
+    background: var(--sand);
+    color: var(--navy);
+    border: 1.5px solid #d0d8e4;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: var(--sand);
+    margin: 0;
+  }
+
+  /* ── PRACTICE STRIP ── */
+  .practice-strip {
+    background: var(--navy);
+    border-radius: 0 0 16px 16px;
+    padding: 22px 32px 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .practice-title {
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: var(--sage);
+    text-transform: uppercase;
+  }
+
+  .practice-intro {
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.6;
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .tool-btn {
+    display: inline-block;
+    padding: 11px 22px;
+    border-radius: 10px;
+    font-family: 'Heebo', Arial, sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+
+  .tool-btn:active { transform: scale(0.97); }
+
+  .btn-questions {
+    background: var(--accent);
+    color: white;
+  }
+
+  .btn-challenge {
+    background: var(--teal);
+    color: white;
+  }
+
+  .tool-btn:hover { opacity: 0.88; }
+
+  .placeholder-note {
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.35);
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-eyebrow"> קורס הדרכה קלינית</div>
+    <h1>המדריכה כגורם מכוון:<br>כלים לשיח הדרכתי</h1>
+    <div class="header-sub">סיכום יום הלמידה</div>
+  </div>
+
+  <!-- BODY -->
+  <div class="body">
+
+    <!-- מנטליזציה -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-dot" style="background:#7c3aed;"></div>
+        <h2>מנטליזציה ואמפתיה בהדרכה</h2>
+      </div>
+      <p>מנטליזציה היא היכולת לתפוס מצבים נפשיים — של הסטודנטית ושל המטופל — כבסיס לכל תגובה הדרכתית. <strong>אמפתיה</strong> היא הכרה ברגש; <strong>הזדהות</strong> היא איבוד הגבול בינינו לבינה. מדריכה שמנטליזציה עובדת אצלה שואלת "מה עובר עליה?" לפני שהיא עונה, ולא אחרי שכבר נאמר משהו שגוי.</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- שלבים אוניברסליים -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-dot" style="background:#0891b2;"></div>
+        <h2>שלבים אוניברסליים בלמידה</h2>
+      </div>
+      <div class="grid-2x2">
+        <div class="mini-card" style="border-color:#7c3aed;">
+          <span class="card-title">אוריינטציה</span>
+          הסטודנטית מגיעה עם ציפיות וחרדה. זקוקה לבהירות ולתחושת ביטחון.
+        </div>
+        <div class="mini-card" style="border-color:#0891b2;">
+          <span class="card-title">רכישת ידע</span>
+          למידה מושגית ומיומנותית. זקוקה להדגמה ולהנחייה ישירה.
+        </div>
+        <div class="mini-card" style="border-color:#6aab8e;">
+          <span class="card-title">תובנה ואינטגרציה</span>
+          חיבור בין תיאוריה לשטח. זקוקה לשאלות פתוחות ולמרחב לחשוב.
+        </div>
+        <div class="mini-card" style="border-color:#e07b4a;">
+          <span class="card-title">שליטה</span>
+          עצמאות גוברת. זקוקה לאתגר ולהכרה בצמיחה.
+        </div>
+      </div>
+      <p>זיהוי השלב קובע את המענה: אותה שאלה של הסטודנטית דורשת תגובה שונה לגמרי בשלב הראשון לעומת השלב הרביעי.</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- מודל הקשר המכוון -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-dot" style="background:#e07b4a;"></div>
+        <h2>מודל הקשר המכוון — Taylor</h2>
+      </div>
+      <p>המדריכה משתמשת במודע בסגנון תקשורת שנבחר לפי הצורך של הסטודנטית ברגע זה. שש סגנונות:</p>
+      <div class="irm-row">
+        <span class="irm-tag">🤝 שיתופי</span>
+        <span class="irm-tag">💬 מעודד</span>
+        <span class="irm-tag">🫂 אמפתי</span>
+        <span class="irm-tag">📋 הוראתי</span>
+        <span class="irm-tag">🧩 פתרון בעיות</span>
+        <span class="irm-tag">🔊 סנגור</span>
+      </div>
+      <p>המפתח הוא <strong>מודעות למעבר</strong>: מדריכה שיודעת מתי ולמה היא עוברת מסגנון לסגנון — ולא סתם מגיבה — מייצרת קשר הדרכתי מכוון.</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- איזון אתגר-תמיכה -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-dot" style="background:#6aab8e;"></div>
+        <h2>איזון בין אתגר לתמיכה</h2>
+      </div>
+      <p>צמיחה מקצועית מתרחשת כשיש <strong>אתגר גבוה יחד עם תמיכה גבוהה</strong>. אתגר ללא תמיכה מוביל לשחיקה; תמיכה ללא אתגר מייצרת קיפאון. תפקיד המדריכה הוא לכייל את השילוב הזה בהתאם לשלב ולסטודנטית הספציפית.</p>
+    </div>
+
+  </div>
+
+  <!-- PRACTICE STRIP -->
+  <div class="practice-strip">
+    <div class="practice-title">תרגול עצמאי</div>
+    <p class="practice-intro">שני תרגולים קצרים למה שלמדנו היום — כל אחד לוקח כ-5 דקות ואפשר לחזור אליו בכל עת.</p>
+    <div class="btn-row">
+      <a class="tool-btn btn-questions" href="QUESTIONS_URL" target="_blank">
+        🎯 תרגול שאלות הדרכה
+      </a>
+      <a class="tool-btn btn-challenge" href="CHALLENGE_URL" target="_blank">
+        ⚖️ איתגור מול תמיכה
+      </a>
+    </div>
+
+</div>
+</body>
+</html>

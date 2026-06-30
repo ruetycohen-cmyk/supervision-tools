@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>תרגול שאלות הדרכה</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 24px 16px; direction: rtl; }
+  h1 { font-size: 1.5rem; color: #1e3a5f; margin-bottom: 4px; text-align: center; }
+  .subtitle { font-size: 0.9rem; color: #5a7a9a; margin-bottom: 24px; text-align: center; }
+  .container { width: 100%; max-width: 700px; display: flex; flex-direction: column; gap: 16px; }
+  .progress-bar-wrap { background: white; border-radius: 10px; padding: 14px 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+  .progress-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 0.85rem; color: #4a5568; }
+  .progress-track { height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(to left, #2563eb, #7c3aed); border-radius: 4px; transition: width 0.4s ease; }
+  .card { background: white; border-radius: 14px; padding: 24px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+  .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+  .type-badge { font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 12px; background: #fee2e2; color: #991b1b; }
+  .category-badge { font-size: 0.72rem; color: #6b7280; background: #f3f4f6; padding: 3px 10px; border-radius: 12px; }
+  .question-text { font-size: 1.1rem; color: #1e3a5f; font-weight: 600; line-height: 1.6; margin-bottom: 20px; padding: 14px 16px; background: #f8fafc; border-radius: 10px; border-right: 4px solid #ef4444; }
+  .prompt { font-size: 0.85rem; color: #6b7280; margin-bottom: 10px; }
+  textarea { width: 100%; border: 2px solid #e2e8f0; border-radius: 10px; padding: 12px 14px; font-size: 0.9rem; font-family: inherit; resize: vertical; min-height: 90px; direction: rtl; color: #374151; transition: border-color 0.2s; outline: none; }
+  textarea:focus { border-color: #2563eb; }
+  .btn-row { display: flex; gap: 10px; margin-top: 14px; }
+  .btn { border: none; border-radius: 8px; padding: 10px 20px; font-size: 0.9rem; cursor: pointer; font-family: inherit; font-weight: 600; transition: background 0.15s, transform 0.1s; }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: #1e3a5f; color: white; flex: 1; }
+  .btn-primary:hover { background: #2c5282; }
+  .btn-secondary { background: #e2e8f0; color: #4a5568; }
+  .btn-secondary:hover { background: #cbd5e0; }
+  .answer-box { margin-top: 16px; border-radius: 10px; overflow: hidden; display: none; }
+  .answer-box.show { display: block; }
+  .answer-section { padding: 14px 16px; margin-bottom: 2px; }
+  .answer-section:last-child { margin-bottom: 0; }
+  .answer-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .answer-text { font-size: 0.88rem; line-height: 1.6; }
+  .section-why { background: #eff6ff; }
+  .section-why .answer-label { color: #1e40af; }
+  .section-why .answer-text { color: #1e40af; }
+  .section-example { background: #f0fdf4; }
+  .section-example .answer-label { color: #065f46; }
+  .section-example .answer-text { color: #065f46; font-weight: 600; }
+  .section-tip { background: #fef3c7; }
+  .section-tip .answer-label { color: #92400e; }
+  .section-tip .answer-text { color: #92400e; }
+  .self-assess { display: none; margin-top: 14px; gap: 10px; }
+  .self-assess.show { display: flex; }
+  .assess-label { font-size: 0.83rem; color: #4a5568; align-self: center; flex-shrink: 0; }
+  .assess-btn { flex: 1; padding: 8px 12px; border: none; border-radius: 8px; font-size: 0.82rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: opacity 0.15s; }
+  .assess-good { background: #d1fae5; color: #065f46; }
+  .assess-ok { background: #fef3c7; color: #92400e; }
+  .assess-hard { background: #fee2e2; color: #991b1b; }
+  .summary { display: none; background: white; border-radius: 14px; padding: 28px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); text-align: center; }
+  .summary.show { display: block; }
+  .summary h2 { font-size: 1.3rem; color: #1e3a5f; margin-bottom: 8px; }
+  .summary .big-score { font-size: 3rem; font-weight: 800; color: #2563eb; margin: 12px 0; }
+  .summary .score-label { font-size: 0.9rem; color: #6b7280; margin-bottom: 20px; }
+  .summary .feedback { font-size: 0.95rem; color: #374151; line-height: 1.6; margin-bottom: 20px; }
+  .stats-row { display: flex; gap: 12px; justify-content: center; margin-bottom: 20px; }
+  .stat-box { padding: 10px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: 700; }
+  .stat-good { background: #d1fae5; color: #065f46; }
+  .stat-ok { background: #fef3c7; color: #92400e; }
+  .stat-hard { background: #fee2e2; color: #991b1b; }
+  .instructions { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 10px 14px; font-size: 0.8rem; color: #1e40af; line-height: 1.5; text-align: center; }
+</style>
+</head>
+<body>
+<h1>תרגול שאלות הדרכה</h1>
+<p class="subtitle">מסגורות לפתוחות — פתחו את השיח עם הסטודנטית</p>
+<div class="container">
+  <div class="instructions">💡 קראו את השאלה הסגורה וכתבו גרסה פתוחה משלכן. לאחר מכן לחצו "הצג דוגמה" לראות הצעה ועצה.</div>
+  <div class="progress-bar-wrap">
+    <div class="progress-top"><span id="progressText">שאלה 1 מתוך 8</span><span id="progressPct">0%</span></div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+  <div class="card" id="questionCard">
+    <div class="card-header"><span class="type-badge">שאלה סגורה</span><span class="category-badge" id="categoryBadge"></span></div>
+    <div class="question-text" id="questionText"></div>
+    <div class="prompt">כיצד תנסחו שאלה פתוחה במקומה?</div>
+    <textarea id="userAnswer" placeholder="כתבו את הניסוח הפתוח שלכן כאן..."></textarea>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="revealAnswer()">הצג דוגמה ועצה</button>
+      <button class="btn btn-secondary" onclick="skipQuestion()">דלגי</button>
+    </div>
+    <div class="answer-box" id="answerBox">
+      <div class="answer-section section-why"><div class="answer-label">מדוע השאלה המקורית סגורה?</div><div class="answer-text" id="whyText"></div></div>
+      <div class="answer-section section-example"><div class="answer-label">דוגמה לשאלה פתוחה</div><div class="answer-text" id="exampleText"></div></div>
+      <div class="answer-section section-tip"><div class="answer-label">טיפ מקצועי</div><div class="answer-text" id="tipText"></div></div>
+    </div>
+    <div class="self-assess" id="selfAssess">
+      <span class="assess-label">איך הרגשתי?</span>
+      <button class="assess-btn assess-good" onclick="assess('good')">✓ הצלחתי</button>
+      <button class="assess-btn assess-ok" onclick="assess('ok')">~ בינוני</button>
+      <button class="assess-btn assess-hard" onclick="assess('hard')">✗ קשה לי</button>
+    </div>
+  </div>
+  <div class="summary" id="summary">
+    <h2>🎉 סיימתן את כל השאלות!</h2>
+    <div class="big-score" id="summaryScore"></div>
+    <div class="score-label">שאלות שהצלחתן</div>
+    <div class="stats-row">
+      <div class="stat-box stat-good" id="statGood"></div>
+      <div class="stat-box stat-ok" id="statOk"></div>
+      <div class="stat-box stat-hard" id="statHard"></div>
+    </div>
+    <div class="feedback" id="summaryFeedback"></div>
+    <button class="btn btn-primary" onclick="restart()" style="max-width:200px; margin:0 auto; display:block;">🔄 התחילי מחדש</button>
+  </div>
+</div>
+<script>
+const questions = [
+  { category: 'שלב ההסתגלות', closed: 'האם את מרגישה טוב במסגרת?', why: 'שאלת כן/לא — מגבילה את התשובה לאישור בלבד ולא פותחת שיח. הסטודנטית עלולה לענות "כן" גם כשקשה לה.', example: 'מה הייתה החוויה שלך השבוע במסגרת?', tip: 'שאלות שמתחילות ב"מה", "כיצד", "ספרי לי" — מזמינות סיפור ולא תשובה חד-הברתית.' },
+  { category: 'רפלקציה', closed: 'האם ידעת מה לעשות עם המטופל?', why: 'מניחה שתהיה תשובת כן/לא ברורה. לא מפנה את הסטודנטית לתהליך החשיבה שלה.', example: 'ספרי לי איך חשבת על הגישה שלך למטופל הזה.', tip: 'פנייה לתהליך ("איך חשבת") עדיפה על פנייה לתוצאה ("מה עשית") — היא מפעילה מנטליזציה.' },
+  { category: 'אתגר קליני', closed: 'האם היה קשה לך עם המטופל?', why: 'שאלה סגורה המרמזת שיש "תשובה נכונה". הסטודנטית עלולה לחוש שכדאי לה לומר "לא".', example: 'מה היה האתגר הכי משמעותי בעבודה עם המטופל הזה?', tip: 'מתן לגיטימציה לקושי מתוך הניסוח — "הכי משמעותי" מניח שהיה קושי ומאפשר שיח על כך.' },
+  { category: 'תכנון התערבות', closed: 'האם תכננת את ההתערבות לפני הכניסה?', why: 'שאלת בדיקה שנשמעת כהאשמה. הסטודנטית עונה ביגונה "כן" גם כשלא.', example: 'ספרי לי איך הכנת את עצמך לפני הפגישה עם המטופל.', tip: 'הזמנה לסיפור ("ספרי לי") מפחיתה הגנתיות ומאפשרת שיח אותנטי על התהליך.' },
+  { category: 'קבלת משוב', closed: 'אז הבנת את המשוב שנתתי לך?', why: 'שאלה שמכניסה לחץ לאשר הבנה. הסטודנטית כמעט תמיד תענה "כן" כדי לא להיראות לא מוכשרת.', example: 'מה לקחת איתך מהמשוב שנתתי לך?', tip: 'שאלה על "לקיחה" ולא על "הבנה" — מאפשרת לסטודנטית לחשוף מה הייתה בשלה לשמוע.' },
+  { category: 'מנטליזציה', closed: 'האם לדעתך המטופל רצה להשתתף בפעילות?', why: 'שאלה סגורה שדורשת השערה בינארית. לא מאתגרת לחשוב לעומק על מניעים.', example: 'מה חשבת שעובר על המטופל כשהצעת לו את הפעילות?', tip: 'שאלה על "מה עובר עליו" מפעילה מנטליזציה ומאמנת את הסטודנטית לקרוא מצבים פנימיים.' },
+  { category: 'גבולות מקצועיים', closed: 'האם שמרת על גבולות מקצועיים עם המטופל?', why: 'שאלת ביקורת מוסווית. לא פותחת שיח — פותחת הגנתיות.', example: 'ספרי לי על רגע בפגישה שבו הרגשת שנדרשת ממך החלטה לגבי גבולות.', tip: 'פנייה לרגע ספציפי עדיפה על שאלה כללית — היא מאפשרת עבודה על מקרה קונקרטי.' },
+  { category: 'צמיחה מקצועית', closed: 'האם את מרוצה מההתקדמות שלך?', why: 'שאלה סגורה שמניחה שיש מדד ברור להתקדמות. לא מזמינה רפלקציה עמוקה.', example: 'מה שינית בדרך שאת עובדת מאז תחילת ההכשרה?', tip: 'שאלה על שינוי קונקרטי מאפשרת לסטודנטית לראות את הצמיחה שלה בעצמה — עוצמתי יותר מאישור חיצוני.' }
+];
+let current = 0, scores = { good: 0, ok: 0, hard: 0, skipped: 0 }, answered = false;
+function updateProgress() { const pct = Math.round((current / questions.length) * 100); document.getElementById('progressText').textContent = `שאלה ${current + 1} מתוך ${questions.length}`; document.getElementById('progressPct').textContent = pct + '%'; document.getElementById('progressFill').style.width = pct + '%'; }
+function loadQuestion() { if (current >= questions.length) { showSummary(); return; } answered = false; const q = questions[current]; document.getElementById('categoryBadge').textContent = q.category; document.getElementById('questionText').textContent = q.closed; document.getElementById('userAnswer').value = ''; document.getElementById('answerBox').classList.remove('show'); document.getElementById('selfAssess').classList.remove('show'); updateProgress(); }
+function revealAnswer() { if (answered) return; answered = true; const q = questions[current]; document.getElementById('whyText').textContent = q.why; document.getElementById('exampleText').textContent = q.example; document.getElementById('tipText').textContent = q.tip; document.getElementById('answerBox').classList.add('show'); document.getElementById('selfAssess').classList.add('show'); }
+function assess(level) { scores[level]++; nextQuestion(); }
+function skipQuestion() { scores.skipped++; nextQuestion(); }
+function nextQuestion() { current++; loadQuestion(); }
+function showSummary() { document.getElementById('questionCard').style.display = 'none'; const summary = document.getElementById('summary'); summary.classList.add('show'); document.getElementById('summaryScore').textContent = scores.good + ' / ' + questions.length; document.getElementById('statGood').textContent = '✓ הצלחתי: ' + scores.good; document.getElementById('statOk').textContent = '~ בינוני: ' + scores.ok; document.getElementById('statHard').textContent = '✗ קשה: ' + scores.hard; let feedback = ''; if (scores.good >= 6) feedback = 'מצוין! את מגלה שליטה טובה בניסוח שאלות פתוחות. המשיכי לתרגל עם מקרים מהשטח.'; else if (scores.good >= 4) feedback = 'התקדמות יפה. שימי לב לשאלות שסימנת כקשות — נסי לחזור אליהן ולתרגל ניסוחים נוספים.'; else feedback = 'שאלות פתוחות הן מיומנות שדורשת תרגול. כדאי לחזור על התרגיל ולהתמקד בשאלות שסימנת כקשות.'; document.getElementById('summaryFeedback').textContent = feedback; }
+function restart() { current = 0; scores = { good: 0, ok: 0, hard: 0, skipped: 0 }; document.getElementById('questionCard').style.display = 'block'; document.getElementById('summary').classList.remove('show'); loadQuestion(); }
+loadQuestion();
+</script>
+</body>
+</html>
