@@ -44,24 +44,13 @@
   .section-tip { background: #fef3c7; }
   .section-tip .answer-label { color: #92400e; }
   .section-tip .answer-text { color: #92400e; }
-  .self-assess { display: none; margin-top: 14px; gap: 10px; }
-  .self-assess.show { display: flex; }
-  .assess-label { font-size: 0.83rem; color: #4a5568; align-self: center; flex-shrink: 0; }
-  .assess-btn { flex: 1; padding: 8px 12px; border: none; border-radius: 8px; font-size: 0.82rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: opacity 0.15s; }
-  .assess-good { background: #d1fae5; color: #065f46; }
-  .assess-ok { background: #fef3c7; color: #92400e; }
-  .assess-hard { background: #fee2e2; color: #991b1b; }
+
   .summary { display: none; background: white; border-radius: 14px; padding: 28px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); text-align: center; }
   .summary.show { display: block; }
   .summary h2 { font-size: 1.3rem; color: #1e3a5f; margin-bottom: 8px; }
   .summary .big-score { font-size: 3rem; font-weight: 800; color: #2563eb; margin: 12px 0; }
   .summary .score-label { font-size: 0.9rem; color: #6b7280; margin-bottom: 20px; }
   .summary .feedback { font-size: 0.95rem; color: #374151; line-height: 1.6; margin-bottom: 20px; }
-  .stats-row { display: flex; gap: 12px; justify-content: center; margin-bottom: 20px; }
-  .stat-box { padding: 10px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: 700; }
-  .stat-good { background: #d1fae5; color: #065f46; }
-  .stat-ok { background: #fef3c7; color: #92400e; }
-  .stat-hard { background: #fee2e2; color: #991b1b; }
   .instructions { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 10px 14px; font-size: 0.8rem; color: #1e40af; line-height: 1.5; text-align: center; }
 </style>
 </head>
@@ -88,22 +77,14 @@
       <div class="answer-section section-example"><div class="answer-label">דוגמה לשאלה פתוחה</div><div class="answer-text" id="exampleText"></div></div>
       <div class="answer-section section-tip"><div class="answer-label">טיפ מקצועי</div><div class="answer-text" id="tipText"></div></div>
     </div>
-    <div class="self-assess" id="selfAssess">
-      <span class="assess-label">איך הרגשתי?</span>
-      <button class="assess-btn assess-good" onclick="assess('good')">✓ הצלחתי</button>
-      <button class="assess-btn assess-ok" onclick="assess('ok')">~ בינוני</button>
-      <button class="assess-btn assess-hard" onclick="assess('hard')">✗ קשה לי</button>
+    <div class="btn-row" id="nextRow" style="display:none; margin-top:14px;">
+      <button class="btn btn-primary" onclick="nextQuestion()">שאלה הבאה ←</button>
     </div>
   </div>
   <div class="summary" id="summary">
     <h2>🎉 סיימתן את כל השאלות!</h2>
     <div class="big-score" id="summaryScore"></div>
     <div class="score-label">שאלות שהצלחתן</div>
-    <div class="stats-row">
-      <div class="stat-box stat-good" id="statGood"></div>
-      <div class="stat-box stat-ok" id="statOk"></div>
-      <div class="stat-box stat-hard" id="statHard"></div>
-    </div>
     <div class="feedback" id="summaryFeedback"></div>
     <button class="btn btn-primary" onclick="restart()" style="max-width:200px; margin:0 auto; display:block;">🔄 התחילי מחדש</button>
   </div>
@@ -119,15 +100,14 @@ const questions = [
   { category: 'גבולות מקצועיים', closed: 'האם שמרת על גבולות מקצועיים עם המטופל?', why: 'שאלת ביקורת מוסווית. לא פותחת שיח — פותחת הגנתיות.', example: 'ספרי לי על רגע בפגישה שבו הרגשת שנדרשת ממך החלטה לגבי גבולות.', tip: 'פנייה לרגע ספציפי עדיפה על שאלה כללית — היא מאפשרת עבודה על מקרה קונקרטי.' },
   { category: 'צמיחה מקצועית', closed: 'האם את מרוצה מההתקדמות שלך?', why: 'שאלה סגורה שמניחה שיש מדד ברור להתקדמות. לא מזמינה רפלקציה עמוקה.', example: 'מה שינית בדרך שאת עובדת מאז תחילת ההכשרה?', tip: 'שאלה על שינוי קונקרטי מאפשרת לסטודנטית לראות את הצמיחה שלה בעצמה — עוצמתי יותר מאישור חיצוני.' }
 ];
-let current = 0, scores = { good: 0, ok: 0, hard: 0, skipped: 0 }, answered = false;
+let current = 0, answered = false;
 function updateProgress() { const pct = Math.round((current / questions.length) * 100); document.getElementById('progressText').textContent = `שאלה ${current + 1} מתוך ${questions.length}`; document.getElementById('progressPct').textContent = pct + '%'; document.getElementById('progressFill').style.width = pct + '%'; }
-function loadQuestion() { if (current >= questions.length) { showSummary(); return; } answered = false; const q = questions[current]; document.getElementById('categoryBadge').textContent = q.category; document.getElementById('questionText').textContent = q.closed; document.getElementById('userAnswer').value = ''; document.getElementById('answerBox').classList.remove('show'); document.getElementById('selfAssess').classList.remove('show'); updateProgress(); }
-function revealAnswer() { if (answered) return; answered = true; const q = questions[current]; document.getElementById('whyText').textContent = q.why; document.getElementById('exampleText').textContent = q.example; document.getElementById('tipText').textContent = q.tip; document.getElementById('answerBox').classList.add('show'); document.getElementById('selfAssess').classList.add('show'); }
-function assess(level) { scores[level]++; nextQuestion(); }
-function skipQuestion() { scores.skipped++; nextQuestion(); }
+function loadQuestion() { if (current >= questions.length) { showSummary(); return; } answered = false; const q = questions[current]; document.getElementById('categoryBadge').textContent = q.category; document.getElementById('questionText').textContent = q.closed; document.getElementById('userAnswer').value = ''; document.getElementById('answerBox').classList.remove('show'); document.getElementById('nextRow').style.display = 'none'; updateProgress(); }
+function revealAnswer() { if (answered) return; answered = true; const q = questions[current]; document.getElementById('whyText').textContent = q.why; document.getElementById('exampleText').textContent = q.example; document.getElementById('tipText').textContent = q.tip; document.getElementById('answerBox').classList.add('show'); document.getElementById('nextRow').style.display = 'flex'; }
+function skipQuestion() { nextQuestion(); }
 function nextQuestion() { current++; loadQuestion(); }
-function showSummary() { document.getElementById('questionCard').style.display = 'none'; const summary = document.getElementById('summary'); summary.classList.add('show'); document.getElementById('summaryScore').textContent = scores.good + ' / ' + questions.length; document.getElementById('statGood').textContent = '✓ הצלחתי: ' + scores.good; document.getElementById('statOk').textContent = '~ בינוני: ' + scores.ok; document.getElementById('statHard').textContent = '✗ קשה: ' + scores.hard; let feedback = ''; if (scores.good >= 6) feedback = 'מצוין! את מגלה שליטה טובה בניסוח שאלות פתוחות. המשיכי לתרגל עם מקרים מהשטח.'; else if (scores.good >= 4) feedback = 'התקדמות יפה. שימי לב לשאלות שסימנת כקשות — נסי לחזור אליהן ולתרגל ניסוחים נוספים.'; else feedback = 'שאלות פתוחות הן מיומנות שדורשת תרגול. כדאי לחזור על התרגיל ולהתמקד בשאלות שסימנת כקשות.'; document.getElementById('summaryFeedback').textContent = feedback; }
-function restart() { current = 0; scores = { good: 0, ok: 0, hard: 0, skipped: 0 }; document.getElementById('questionCard').style.display = 'block'; document.getElementById('summary').classList.remove('show'); loadQuestion(); }
+function showSummary() { document.getElementById('questionCard').style.display = 'none'; document.getElementById('summary').classList.add('show'); document.getElementById('summaryScore').textContent = questions.length + ' / ' + questions.length; document.getElementById('summaryFeedback').textContent = 'עברתן על כל השאלות. המשיכו לתרגל ניסוחים פתוחים עם מקרים מהשטח.'; }
+function restart() { current = 0; document.getElementById('questionCard').style.display = 'block'; document.getElementById('summary').classList.remove('show'); loadQuestion(); }
 loadQuestion();
 </script>
 </body>
